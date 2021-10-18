@@ -6,6 +6,7 @@
     />
     <div class="wrapper__input">
       <input
+        v-model="registerForm.username"
         type="text"
         placeholder="请输入手机号"
         class="wrapper__input__content"
@@ -13,6 +14,7 @@
     </div>
     <div class="wrapper__input">
       <input
+        v-model="registerForm.password"
         type="password"
         placeholder="请输入密码"
         autocomplete="off"
@@ -21,24 +23,74 @@
     </div>
     <div class="wrapper__input">
       <input
+        v-model="registerForm.ensnarement"
         type="password"
         placeholder="确认密码"
         autocomplete="off"
         class="wrapper__input__content"
       />
     </div>
-    <div class="wrapper__register-button">注册</div>
+    <div class="wrapper__register-button" @click="handleRegister">注册</div>
     <router-link to="/login">
       <div class="wrapper__register-link">已有账号，去登录</div></router-link
     >
   </div>
+  <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
+import { reactive } from 'vue'
+import { post } from '@/utils/request'
+import Toast, { useToastEffect } from '@/components/Toast'
+
+const useRegisterEffect = toastHandler => {
+  const router = useRouter()
+  const registerForm = reactive({
+    username: '',
+    password: '',
+    ensnarement: '',
+  })
+  const handleRegister = async () => {
+    try {
+      if (!registerForm.username || !registerForm.password) {
+        toastHandler('请填写手机号和密码')
+        return false
+      }
+      if (registerForm.password !== registerForm.ensnarement) {
+        toastHandler('两次密码输入不一样')
+        return false
+      }
+      const result = await post('/api/user/register', registerForm)
+      if (result?.errno === 0) {
+        router.push('/login')
+      } else {
+        toastHandler('注册失败')
+      }
+    } catch (err) {
+      toastHandler('请求失败')
+    }
+  }
+  return {
+    registerForm,
+    handleRegister,
+  }
+}
+
 export default {
   name: 'Register',
+  components: {
+    Toast,
+  },
   setup() {
-    return {}
+    const { toastData, toastHandler } = useToastEffect()
+    const { registerForm, handleRegister } = useRegisterEffect(toastHandler)
+
+    return {
+      handleRegister,
+      registerForm,
+      toastData,
+    }
   },
 }
 </script>

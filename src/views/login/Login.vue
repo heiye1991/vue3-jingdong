@@ -43,6 +43,10 @@ const useLoginEffect = toastHandler => {
   })
   const handleLogin = async () => {
     try {
+      if (!loginForm.username || !loginForm.password) {
+        toastHandler('请填写手机号和密码')
+        return false
+      }
       const result = await post('/api/user/login', loginForm)
       if (result?.errno === 0) {
         localStorage.setItem('login', true)
