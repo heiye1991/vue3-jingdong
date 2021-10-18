@@ -6,6 +6,7 @@
     />
     <div class="wrapper__input">
       <input
+        v-model="loginForm.username"
         type="text"
         placeholder="请输入手机号"
         class="wrapper__input__content"
@@ -13,6 +14,7 @@
     </div>
     <div class="wrapper__input">
       <input
+        v-model="loginForm.password"
         type="password"
         placeholder="请输入密码"
         autocomplete="off"
@@ -27,17 +29,33 @@
 </template>
 
 <script>
+import { post } from '@/utils/request'
 import { useRouter } from 'vue-router'
+import { reactive } from 'vue'
 export default {
   name: 'Login',
   setup() {
+    const loginForm = reactive({
+      username: '',
+      password: '',
+    })
     const router = useRouter()
-    const handleLogin = () => {
-      localStorage.setItem('login', true)
-      router.push('/')
+    const handleLogin = async () => {
+      try {
+        const result = await post('/api/user/login', loginForm)
+        if (result?.errno === 0) {
+          localStorage.setItem('login', true)
+          router.push('/')
+        } else {
+          console.log('登录失败')
+        }
+      } catch (err) {
+        console.log('请求失败', err)
+      }
     }
     return {
       handleLogin,
+      loginForm,
     }
   },
 }
