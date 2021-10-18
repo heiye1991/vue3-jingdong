@@ -26,53 +26,53 @@
       <div class="wrapper__login-link">立即注册</div>
     </router-link>
   </div>
-  <toast v-if="showToast" :message="msg" />
+  <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
 
 <script>
-import { post } from '@/utils/request'
 import { useRouter } from 'vue-router'
-import { reactive, ref } from 'vue'
-import Toast from '@/components/Toast'
+import { reactive } from 'vue'
+import { post } from '@/utils/request'
+import Toast, { useToastEffect } from '@/components/Toast'
+
+const useLoginEffect = toastHandler => {
+  const router = useRouter()
+  const loginForm = reactive({
+    username: '',
+    password: '',
+  })
+  const handleLogin = async () => {
+    try {
+      const result = await post('/api/user/login', loginForm)
+      if (result?.errno === 0) {
+        localStorage.setItem('login', true)
+        router.push('/')
+      } else {
+        toastHandler('登录失败')
+      }
+    } catch (err) {
+      toastHandler('请求失败')
+    }
+  }
+  return {
+    loginForm,
+    handleLogin,
+  }
+}
+
 export default {
   name: 'Login',
   components: {
     Toast,
   },
   setup() {
-    const loginForm = reactive({
-      username: '',
-      password: '',
-    })
-    const showToast = ref(false)
-    const msg = ref('')
-    const router = useRouter()
-    const toastHandler = message => {
-      showToast.value = true
-      msg.value = message
-      setTimeout(() => {
-        showToast.value = false
-        msg.value = ''
-      }, 2000)
-    }
-    const handleLogin = async () => {
-      try {
-        const result = await post('1/api/user/login', loginForm)
-        if (result?.errno === 0) {
-          localStorage.setItem('login', true)
-          router.push('/')
-        } else {
-          toastHandler('登录失败')
-        }
-      } catch (err) {
-        toastHandler('请求失败')
-      }
-    }
+    const { toastData, toastHandler } = useToastEffect()
+    const { loginForm, handleLogin } = useLoginEffect(toastHandler)
+
     return {
       handleLogin,
       loginForm,
-      showToast,
-      msg,
+      toastData,
     }
   },
 }
