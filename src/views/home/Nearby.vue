@@ -1,7 +1,11 @@
 <template>
   <div class="nearby">
     <h3 class="nearby__title">附近店铺</h3>
-    <router-link v-for="item in nearbyList" :key="item._id" to="/shop">
+    <router-link
+      v-for="item in nearbyList"
+      :key="item._id"
+      :to="`/shop/${item._id}`"
+    >
       <shop-info :item="item" />
     </router-link>
   </div>
@@ -22,7 +26,7 @@ const useNearbyListEffect = toastHandler => {
       if (result?.errno === 0 && result?.data.length) {
         nearbyList.value = result.data
       } else {
-        toastHandler('登录失败')
+        toastHandler('获取附近商铺失败')
       }
     } catch (err) {
       toastHandler('请求失败')

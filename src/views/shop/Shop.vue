@@ -12,29 +12,56 @@
         />
       </div>
     </div>
-    <shop-info :item="item" :show-border="false" />
+    <shop-info v-show="item.imgUrl" :item="item" :show-border="false" />
   </div>
+  <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
 
 <script>
+import { reactive, toRefs } from 'vue'
+import { useRoute } from 'vue-router'
 import ShopInfo from '@/components/ShopInfo'
+import Toast, { useToastEffect } from '@/components/Toast'
+import { get } from '@/utils/request'
+
+const useShopInfoEffect = toastHandler => {
+  const route = useRoute()
+  const id = route.params.id
+  let shopInfo = reactive({
+    item: {},
+  })
+  const getShopInfoById = async () => {
+    try {
+      const result = await get(`/api/shop/${id}`)
+      if (result?.errno === 0 && result?.data) {
+        shopInfo.item = result.data
+      } else {
+        toastHandler('获取商铺信息失败')
+      }
+    } catch (err) {
+      toastHandler('请求失败')
+    }
+  }
+  const { item } = toRefs(shopInfo)
+  return {
+    item,
+    getShopInfoById,
+  }
+}
 
 export default {
   name: 'Shop',
   components: {
     ShopInfo,
+    Toast,
   },
   setup() {
-    const item = {
-      expressLimit: 0,
-      expressPrice: 5,
-      imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-      name: '沃尔玛',
-      sales: 10000,
-      slogan: 'VIP尊享满89元减4元运费券',
-      _id: '1',
-    }
+    const { toastData, toastHandler } = useToastEffect()
+    const { item, getShopInfoById } = useShopInfoEffect(toastHandler)
+    getShopInfoById()
+
     return {
+      toastData,
       item,
     }
   },
@@ -42,11 +69,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/variables.scss';
 .wrapper {
   padding: 0 0.18rem;
   .search {
     display: flex;
-    margin: 0.2rem 0 0.16rem;
+    margin: 0.14rem 0 0.04rem;
     line-height: 0.32rem;
     &__back {
       width: 0.3rem;
@@ -56,23 +84,23 @@ export default {
     &__content {
       display: flex;
       flex: 1;
-      background: #f5f5f5;
+      background: $search-bg-color;
       border-radius: 16px;
       &__icon {
         width: 0.44rem;
         text-align: center;
-        color: #b7b7b7;
+        color: $search-font-color;
       }
       &__input {
         height: 0.32rem;
         width: 100%;
         padding-right: 0.12rem;
-        color: #333;
+        color: $content-font-color;
         font-size: 0.14rem;
         border: none;
         background: none;
         &::placeholder {
-          color: #333;
+          color: $content-font-color;
         }
       }
     }
