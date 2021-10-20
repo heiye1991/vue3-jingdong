@@ -136,8 +136,8 @@ export default {
     margin: 0.32rem 0.4rem 0.16rem;
     font-size: 0.16rem;
     text-align: center;
-    color: #fff;
-    background: #0091ff;
+    color: $bgColor;
+    background: $btn-color;
     box-shadow: 0 0.04rem 0.08rem 0 #addbff;
     border-radius: 0.04rem;
   }

@@ -21,6 +21,11 @@
             <span class="product__item__origin">&yen;{{ item.oldPrice }}</span>
           </p>
         </div>
+        <div class="product__item__num">
+          <span class="product__item__num__minus iconfont">&#xe691;</span>
+          10
+          <span class="product__item__num__plus iconfont">&#xe668;</span>
+        </div>
       </div>
     </div>
   </div>
@@ -57,6 +62,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
+@import '@/styles/mixins.scss';
 .content {
   position: absolute;
   left: 0;
@@ -75,7 +81,7 @@ export default {
       line-height: 0.4rem;
       text-align: center;
       &--active {
-        background: #fff;
+        background: $bgColor;
       }
     }
   }
@@ -83,19 +89,24 @@ export default {
     flex: 1;
     overflow-y: auto;
     &__item {
+      position: relative;
       display: flex;
       padding: 0.12rem 0;
       margin: 0 0.16rem;
-      border-bottom: 1px solid #f1f1f1;
+      border-bottom: 1px solid $content-bg-color;
       &__img {
         width: 0.68rem;
         height: 0.68rem;
         margin-right: 0.16rem;
       }
+      &__detail {
+        overflow: hidden;
+      }
       &__title {
         font-size: 0.14rem;
         line-height: 0.2rem;
         color: $content-font-color;
+        @include ellipsis;
       }
       &__sales {
         margin: 0.06rem 0;
@@ -106,7 +117,7 @@ export default {
       &__price {
         font-size: 0.14rem;
         line-height: 0.2rem;
-        color: #e93b3b;
+        color: $highlight-font-color;
       }
       &__yen {
         font-size: 0.12rem;
@@ -115,8 +126,30 @@ export default {
         margin-left: 0.06rem;
         line-height: 0.2rem;
         font-size: 0.12rem;
-        color: #999;
+        color: $light-font-color;
         text-decoration: line-through;
+      }
+      &__num {
+        position: absolute;
+        right: 0;
+        bottom: 0.12rem;
+        font-size: 0.14rem;
+        color: $content-font-color;
+        &__minus,
+        &__plus {
+          display: inline-block;
+          width: 0.2rem;
+          height: 0.2rem;
+          text-align: center;
+        }
+        &__minus {
+          margin-right: 0.04rem;
+          color: $medium-font-color;
+        }
+        &__plus {
+          margin-left: 0.04rem;
+          color: $btn-color;
+        }
       }
     }
   }
