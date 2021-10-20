@@ -13,6 +13,7 @@
       </div>
     </div>
     <shop-info v-show="item.imgUrl" :item="item" :show-border="false" />
+    <Content />
   </div>
   <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
@@ -23,6 +24,7 @@ import { useRoute } from 'vue-router'
 import ShopInfo from '@/components/ShopInfo'
 import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
+import Content from '@/views/shop/Content'
 
 const useShopInfoEffect = toastHandler => {
   const route = useRoute()
@@ -54,6 +56,7 @@ export default {
   components: {
     ShopInfo,
     Toast,
+    Content,
   },
   setup() {
     const { toastData, toastHandler } = useToastEffect()
