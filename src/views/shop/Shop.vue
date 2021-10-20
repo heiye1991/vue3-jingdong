@@ -12,8 +12,9 @@
         />
       </div>
     </div>
-    <shop-info v-show="item.imgUrl" :item="item" :show-border="false" />
+    <ShopInfo v-show="item.imgUrl" :item="item" :show-border="false" />
     <Content />
+    <Cart />
   </div>
   <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
@@ -25,6 +26,7 @@ import ShopInfo from '@/components/ShopInfo'
 import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
 import Content from '@/views/shop/Content'
+import Cart from '@/views/shop/Cart'
 
 const useShopInfoEffect = toastHandler => {
   const route = useRoute()
@@ -57,6 +59,7 @@ export default {
     ShopInfo,
     Toast,
     Content,
+    Cart,
   },
   setup() {
     const { toastData, toastHandler } = useToastEffect()
