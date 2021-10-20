@@ -9,11 +9,15 @@ const instance = axios.create({
 export const get = (url, params = {}) => {
   return new Promise((resolve, reject) => {
     instance
-      .get(url, params, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      .get(
+        url,
+        { params },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
       .then(res => {
         resolve(res.data)
       })

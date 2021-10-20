@@ -5,7 +5,8 @@
         v-for="item in categories"
         :key="item.name"
         class="category__item"
-        :class="{ 'category__item--active': item.tab === 'all' }"
+        :class="{ 'category__item--active': item.tab === currentTab }"
+        @click="handleTabClick(item.tab)"
       >
         {{ item.name }}
       </div>
@@ -29,32 +30,77 @@
       </div>
     </div>
   </div>
+  <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
 
 <script>
+import { reactive, ref, toRefs, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import Toast, { useToastEffect } from '@/components/Toast'
+import { get } from '@/utils/request'
+
+const categories = [
+  { name: '全部商品', tab: 'all' },
+  { name: '秒杀', tab: 'seckill' },
+  { name: '新鲜水果', tab: 'fruit' },
+]
+
+const useTabEffect = () => {
+  const currentTab = ref(categories[0].tab)
+  const handleTabClick = tab => {
+    currentTab.value = tab
+  }
+
+  return {
+    currentTab,
+    handleTabClick,
+  }
+}
+
+const useCurrentListEffect = (currentTab, toastHandler) => {
+  const route = useRoute()
+  const id = route.params.id
+  let content = reactive({
+    list: {},
+  })
+  const getContentList = async () => {
+    try {
+      const result = await get(`/api/shop/${id}/products`, {
+        tab: currentTab.value,
+      })
+      if (result?.errno === 0 && result?.data.length) {
+        content.list = result.data
+      } else {
+        toastHandler('获取商品列表失败')
+      }
+    } catch (err) {
+      toastHandler('请求失败')
+    }
+  }
+  watchEffect(() => getContentList())
+  const { list } = toRefs(content)
+
+  return {
+    list,
+    getContentList,
+  }
+}
 export default {
   name: 'Content',
+  components: {
+    Toast,
+  },
   setup() {
-    const categories = [
-      { name: '全部商品', tab: 'all' },
-      { name: '秒杀', tab: 'seckill' },
-      { name: '新鲜水果', tab: 'fruit' },
-    ]
-
-    const list = [
-      {
-        _id: 1,
-        imgUrl: 'http://www.dell-lee.com/imgs/vue3/near.png',
-        name: '番茄250g/份',
-        sales: 10,
-        price: 33.6,
-        oldPrice: 66.6,
-      },
-    ]
+    const { toastData, toastHandler } = useToastEffect()
+    const { currentTab, handleTabClick } = useTabEffect()
+    const { list } = useCurrentListEffect(currentTab, toastHandler)
 
     return {
+      toastData,
       categories,
+      currentTab,
       list,
+      handleTabClick,
     }
   },
 }
