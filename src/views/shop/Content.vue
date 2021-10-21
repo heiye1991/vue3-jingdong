@@ -28,7 +28,7 @@
             @click="changeCartItemInfo(shopId, item._id, item, -1, shopName)"
             >&#xe691;
           </span>
-          {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }}
+          {{ getProductCartCount(shopId, item._id) }}
           <span
             class="product__item__num__plus iconfont"
             @click="changeCartItemInfo(shopId, item._id, item, 1, shopName)"
@@ -111,9 +111,13 @@ const useCartEffect = () => {
       shopName,
     })
   }
+  const getProductCartCount = (shopId, productId) => {
+    return cartList?.[shopId]?.productList?.[productId]?.count || 0
+  }
   return {
     cartList,
     changeCartItemInfo,
+    getProductCartCount,
   }
 }
 export default {
@@ -130,7 +134,8 @@ export default {
     const { toastData, toastHandler } = useToastEffect()
     const { currentTab, handleTabClick } = useTabEffect()
     const { list } = useCurrentListEffect(currentTab, shopId, toastHandler)
-    const { cartList, changeCartItemInfo } = useCartEffect()
+    const { cartList, changeCartItemInfo, getProductCartCount } =
+      useCartEffect()
 
     return {
       toastData,
@@ -141,6 +146,7 @@ export default {
       shopId,
       changeCartItemInfo,
       cartList,
+      getProductCartCount,
     }
   },
 }

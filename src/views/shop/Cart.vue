@@ -1,16 +1,16 @@
 <template>
   <div
     class="mask"
-    v-if="showCart && totalCount > 0"
+    v-if="showCart && calculations.totalCount > 0"
     @click="handleCartShowChange"
   ></div>
   <div class="cart">
-    <div v-if="showCart && totalCount > 0" class="product">
+    <div v-if="showCart && calculations.totalCount > 0" class="product">
       <div class="product__header">
         <div class="product__header__all" @click="setCartItemsChecked(shopId)">
           <span
             class="product__header__icon iconfont"
-            v-html="allChecked ? '&#xe652;' : '&#xe667;'"
+            v-html="calculations.allChecked ? '&#xe652;' : '&#xe667;'"
           ></span>
           全选
         </div>
@@ -61,12 +61,14 @@
           src="http://www.dell-lee.com/imgs/vue3/basket.png"
           class="check__icon__img"
         />
-        <div class="check__icon__tag">{{ total }}</div>
+        <div class="check__icon__tag">{{ calculations.total }}</div>
       </div>
       <div class="check__info">
-        总计：<span class="check__info__price">&yen; {{ totalPrice }}</span>
+        总计：<span class="check__info__price"
+          >&yen; {{ calculations.totalPrice }}</span
+        >
       </div>
-      <div class="check__btn" v-show="total > 0">
+      <div class="check__btn" v-show="calculations.total > 0">
         <router-link to="/">去结算</router-link>
       </div>
     </div>
@@ -85,43 +87,28 @@ const useCartEffect = () => {
   const cartList = store.state.cartList
   const showCart = ref(false)
 
-  const total = computed(() => {
-    let count = 0
+  const calculations = computed(() => {
+    const result = {
+      total: 0,
+      totalCount: 0,
+      totalPrice: 0,
+      allChecked: true,
+    }
     const productList = cartList[shopId]?.productList
     if (productList) {
       for (const item of Object.values(productList)) {
         if (item.checked) {
-          count += item.count
+          result.total += item.count
+          result.totalPrice += item.count * item.price
         }
+        result.totalCount += item.count
       }
+      result.allChecked = Object.values(productList).every(
+        product => product.checked
+      )
     }
-    return count
-  })
-  const totalCount = computed(() => {
-    let count = 0
-    const productList = cartList[shopId]?.productList
-    if (productList) {
-      for (const item of Object.values(productList)) {
-        count += item.count
-      }
-    }
-    return count
-  })
-  const totalPrice = computed(() => {
-    let price = 0
-    const productList = cartList[shopId]?.productList
-    if (productList) {
-      for (const item of Object.values(productList)) {
-        if (item.checked) {
-          price += item.count * item.price
-        }
-      }
-    }
-    return price.toFixed(2)
-  })
-  const allChecked = computed(() => {
-    const productList = cartList[shopId]?.productList
-    return Object.values(productList).every(product => product.checked)
+    result.totalPrice = result.totalPrice.toFixed(2)
+    return result
   })
 
   const productList = computed(() => {
@@ -164,13 +151,10 @@ const useCartEffect = () => {
   }
 
   return {
-    total,
-    totalCount,
-    totalPrice,
+    calculations,
     productList,
     shopId,
     cartList,
-    allChecked,
     changeCartItemInfo,
     toggleCartEffect,
     changeCartItemChecked,
@@ -186,13 +170,10 @@ export default {
   },
   setup() {
     const {
-      total,
-      totalCount,
-      totalPrice,
+      calculations,
       productList,
       shopId,
       cartList,
-      allChecked,
       changeCartItemInfo,
       toggleCartEffect,
       changeCartItemChecked,
@@ -202,19 +183,17 @@ export default {
     const { showCart, handleCartShowChange } = toggleCartEffect()
 
     return {
-      total,
-      totalCount,
-      totalPrice,
+      calculations,
       productList,
       shopId,
       cartList,
-      allChecked,
       changeCartItemInfo,
-      showCart,
-      handleCartShowChange,
+      toggleCartEffect,
       changeCartItemChecked,
       cleanCartProducts,
       setCartItemsChecked,
+      showCart,
+      handleCartShowChange,
     }
   },
 }
