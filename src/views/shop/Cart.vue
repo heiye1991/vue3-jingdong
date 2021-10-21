@@ -1,7 +1,37 @@
 <template>
+  <div class="mask" v-if="showCart" @click="handleCartShowChange"></div>
   <div class="cart">
+    <div v-if="showCart" class="product">
+      <template v-for="item in productList" :key="item._id">
+        <div v-if="item.count > 0" class="product__item">
+          <img class="product__item__img" :src="item.imgUrl" />
+          <div class="product__item__detail">
+            <h4 class="product__item__title">{{ item.name }}</h4>
+            <p class="product__item__price">
+              <span class="product__item__yen">&yen;</span>{{ item.price }}
+              <span class="product__item__origin"
+                >&yen;{{ item.oldPrice }}</span
+              >
+            </p>
+          </div>
+          <div class="product__item__num">
+            <span
+              class="product__item__num__minus iconfont"
+              @click="changeCartItemInfo(shopId, item._id, item, -1)"
+              >&#xe691;
+            </span>
+            {{ item.count || 0 }}
+            <span
+              class="product__item__num__plus iconfont"
+              @click="changeCartItemInfo(shopId, item._id, item, 1)"
+              >&#xe668;
+            </span>
+          </div>
+        </div>
+      </template>
+    </div>
     <div class="check">
-      <div class="check__icon">
+      <div class="check__icon" @click="handleCartShowChange">
         <img
           src="http://www.dell-lee.com/imgs/vue3/basket.png"
           class="check__icon__img"
@@ -17,7 +47,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -46,20 +76,60 @@ const useCartEffect = () => {
     }
     return price.toFixed(2)
   })
+
+  const productList = computed(() => {
+    const productList = cartList[shopId] || []
+    return productList
+  })
+
+  const changeCartItemInfo = (shopId, productId, productInfo, num) => {
+    store.commit('changeCartItemInfo', {
+      shopId,
+      productId,
+      productInfo,
+      num,
+    })
+  }
+
+  const toggleCartEffect = () => {
+    const showCart = ref(false)
+    const handleCartShowChange = () => {
+      showCart.value = !showCart.value
+    }
+    return { showCart, handleCartShowChange }
+  }
+
   return {
     total,
     totalPrice,
+    productList,
+    shopId,
+    changeCartItemInfo,
+    toggleCartEffect,
   }
 }
 
 export default {
   name: 'Cart',
   setup() {
-    const { total, totalPrice } = useCartEffect()
+    const {
+      total,
+      totalPrice,
+      productList,
+      shopId,
+      changeCartItemInfo,
+      toggleCartEffect,
+    } = useCartEffect()
+    const { showCart, handleCartShowChange } = toggleCartEffect()
 
     return {
       total,
       totalPrice,
+      productList,
+      shopId,
+      changeCartItemInfo,
+      showCart,
+      handleCartShowChange,
     }
   },
 }
@@ -67,12 +137,87 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
+@import '@/styles/mixins.scss';
+.mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
 .cart {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 0.5rem;
+  z-index: 2;
+  background: #fff;
+  .product {
+    flex: 1;
+    overflow-y: auto;
+    background: #fff;
+    &__item {
+      position: relative;
+      display: flex;
+      padding: 0.12rem 0;
+      margin: 0 0.16rem;
+      border-bottom: 1px solid $content-bg-color;
+      &__img {
+        width: 0.46rem;
+        height: 0.46rem;
+        margin-right: 0.16rem;
+      }
+      &__detail {
+        overflow: hidden;
+      }
+      &__title {
+        font-size: 0.14rem;
+        line-height: 0.2rem;
+        color: $content-font-color;
+        @include ellipsis;
+      }
+      &__price {
+        margin-top: 0.06rem;
+        font-size: 0.14rem;
+        line-height: 0.2rem;
+        color: $highlight-font-color;
+      }
+      &__yen {
+        font-size: 0.12rem;
+      }
+      &__origin {
+        margin-left: 0.06rem;
+        line-height: 0.2rem;
+        font-size: 0.12rem;
+        color: $light-font-color;
+        text-decoration: line-through;
+      }
+      &__num {
+        position: absolute;
+        right: 0;
+        bottom: 0.12rem;
+        font-size: 0.14rem;
+        color: $content-font-color;
+        &__minus,
+        &__plus {
+          display: inline-block;
+          width: 0.2rem;
+          height: 0.2rem;
+          text-align: center;
+        }
+        &__minus {
+          margin-right: 0.04rem;
+          color: $medium-font-color;
+        }
+        &__plus {
+          margin-left: 0.04rem;
+          color: $btn-color;
+        }
+      }
+    }
+  }
   .check {
     display: flex;
     height: 0.5rem;

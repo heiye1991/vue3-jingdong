@@ -28,7 +28,7 @@
             @click="changeCartItemInfo(shopId, item._id, item, -1)"
             >&#xe691;
           </span>
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ item.count || 0 }}
           <span
             class="product__item__num__plus iconfont"
             @click="changeCartItemInfo(shopId, item._id, item, 1)"
@@ -95,7 +95,6 @@ const useCurrentListEffect = (currentTab, shopId, toastHandler) => {
 
 const useCartEffect = () => {
   const store = useStore()
-  const { cartList } = toRefs(store.state)
   const changeCartItemInfo = (shopId, productId, productInfo, num) => {
     store.commit('changeCartItemInfo', {
       shopId,
@@ -105,7 +104,6 @@ const useCartEffect = () => {
     })
   }
   return {
-    cartList,
     changeCartItemInfo,
   }
 }
@@ -120,7 +118,7 @@ export default {
     const { toastData, toastHandler } = useToastEffect()
     const { currentTab, handleTabClick } = useTabEffect()
     const { list } = useCurrentListEffect(currentTab, shopId, toastHandler)
-    const { cartList, changeCartItemInfo } = useCartEffect()
+    const { changeCartItemInfo } = useCartEffect()
 
     return {
       toastData,
@@ -128,7 +126,6 @@ export default {
       currentTab,
       list,
       handleTabClick,
-      cartList,
       shopId,
       changeCartItemInfo,
     }
