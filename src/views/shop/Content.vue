@@ -25,13 +25,13 @@
         <div class="product__item__num">
           <span
             class="product__item__num__minus iconfont"
-            @click="changeCartItemInfo(shopId, item._id, item, -1)"
+            @click="changeCartItemInfo(shopId, item._id, item, -1, shopName)"
             >&#xe691;
           </span>
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }}
           <span
             class="product__item__num__plus iconfont"
-            @click="changeCartItemInfo(shopId, item._id, item, 1)"
+            @click="changeCartItemInfo(shopId, item._id, item, 1, shopName)"
             >&#xe668;
           </span>
         </div>
@@ -96,12 +96,19 @@ const useCurrentListEffect = (currentTab, shopId, toastHandler) => {
 const useCartEffect = () => {
   const store = useStore()
   const cartList = store.state.cartList
-  const changeCartItemInfo = (shopId, productId, productInfo, num) => {
+  const changeCartItemInfo = (
+    shopId,
+    productId,
+    productInfo,
+    num,
+    shopName
+  ) => {
     store.commit('changeCartItemInfo', {
       shopId,
       productId,
       productInfo,
       num,
+      shopName,
     })
   }
   return {
@@ -113,6 +120,9 @@ export default {
   name: 'Content',
   components: {
     Toast,
+  },
+  props: {
+    shopName: String,
   },
   setup() {
     const route = useRoute()
@@ -169,7 +179,7 @@ export default {
       display: flex;
       padding: 0.12rem 0;
       margin: 0 0.16rem;
-      border-bottom: 1px solid $content-bg-color;
+      border-bottom: 0.01rem solid $content-bg-color;
       &__img {
         width: 0.68rem;
         height: 0.68rem;

@@ -115,7 +115,7 @@ export default {
     margin: 0 0.4rem 0.16rem;
     padding: 0 0.16rem;
     background: #f9f9f9;
-    border: 1px solid #e5e5e5;
+    border: 0.01rem solid #e5e5e5;
     border-radius: 0.06rem;
     &__content {
       width: 100%;

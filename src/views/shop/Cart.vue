@@ -42,13 +42,13 @@
           <div class="product__item__num">
             <span
               class="product__item__num__minus iconfont"
-              @click="changeCartItemInfo(shopId, item._id, item, -1)"
+              @click="changeCartItemInfo(shopId, item._id, item, -1, shopName)"
               >&#xe691;
             </span>
             {{ item.count || 0 }}
             <span
               class="product__item__num__plus iconfont"
-              @click="changeCartItemInfo(shopId, item._id, item, 1)"
+              @click="changeCartItemInfo(shopId, item._id, item, 1, shopName)"
               >&#xe668;
             </span>
           </div>
@@ -66,7 +66,9 @@
       <div class="check__info">
         总计：<span class="check__info__price">&yen; {{ totalPrice }}</span>
       </div>
-      <div class="check__btn">去结算</div>
+      <div class="check__btn" v-show="total > 0">
+        <router-link to="/">去结算</router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -82,9 +84,10 @@ const useCartEffect = () => {
   const shopId = route.params.id
   const cartList = store.state.cartList
   const showCart = ref(false)
+
   const total = computed(() => {
     let count = 0
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     if (productList) {
       for (const item of Object.values(productList)) {
         if (item.checked) {
@@ -96,7 +99,7 @@ const useCartEffect = () => {
   })
   const totalCount = computed(() => {
     let count = 0
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     if (productList) {
       for (const item of Object.values(productList)) {
         count += item.count
@@ -106,7 +109,7 @@ const useCartEffect = () => {
   })
   const totalPrice = computed(() => {
     let price = 0
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     if (productList) {
       for (const item of Object.values(productList)) {
         if (item.checked) {
@@ -116,14 +119,14 @@ const useCartEffect = () => {
     }
     return price.toFixed(2)
   })
+  const allChecked = computed(() => {
+    const productList = cartList[shopId]?.productList
+    return Object.values(productList).every(product => product.checked)
+  })
 
   const productList = computed(() => {
-    const productList = cartList[shopId] || []
+    const productList = cartList[shopId]?.productList || []
     return productList
-  })
-  const allChecked = computed(() => {
-    const productList = cartList[shopId]
-    return Object.values(productList).every(product => product.checked)
   })
 
   const changeCartItemInfo = (shopId, productId, productInfo, num) => {
@@ -178,6 +181,9 @@ const useCartEffect = () => {
 
 export default {
   name: 'Cart',
+  props: {
+    shopName: String,
+  },
   setup() {
     const {
       total,
@@ -268,7 +274,7 @@ export default {
       display: flex;
       padding: 0.12rem 0;
       margin: 0 0.16rem;
-      border-bottom: 1px solid $content-bg-color;
+      border-bottom: 0.01rem solid $content-bg-color;
       &__checked {
         line-height: 0.5rem;
         margin-right: 0.2rem;
@@ -376,7 +382,6 @@ export default {
       font-size: 0.14rem;
       a {
         color: $bgColor;
-        text-decoration: none;
       }
     }
   }

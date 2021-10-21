@@ -13,8 +13,8 @@
       </div>
     </div>
     <ShopInfo v-show="item.imgUrl" :item="item" :show-border="false" />
-    <Content />
-    <Cart />
+    <Content :shopName="item.name" />
+    <Cart :shopName="item.name" />
   </div>
   <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>
@@ -91,7 +91,7 @@ export default {
       display: flex;
       flex: 1;
       background: $search-bg-color;
-      border-radius: 16px;
+      border-radius: 0.16rem;
       &__icon {
         width: 0.44rem;
         text-align: center;
