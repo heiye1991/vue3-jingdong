@@ -16,16 +16,24 @@
         <img class="product__item__img" :src="item.imgUrl" />
         <div class="product__item__detail">
           <h4 class="product__item__title">{{ item.name }}</h4>
-          <p class="product__item__sales">{{ item.sales }}</p>
+          <p class="product__item__sales">月售 {{ item.sales }}</p>
           <p class="product__item__price">
             <span class="product__item__yen">&yen;</span>{{ item.price }}
             <span class="product__item__origin">&yen;{{ item.oldPrice }}</span>
           </p>
         </div>
         <div class="product__item__num">
-          <span class="product__item__num__minus iconfont">&#xe691;</span>
-          10
-          <span class="product__item__num__plus iconfont">&#xe668;</span>
+          <span
+            class="product__item__num__minus iconfont"
+            @click="changeCartItemInfo(shopId, item._id, item, -1)"
+            >&#xe691;
+          </span>
+          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          <span
+            class="product__item__num__plus iconfont"
+            @click="changeCartItemInfo(shopId, item._id, item, 1)"
+            >&#xe668;
+          </span>
         </div>
       </div>
     </div>
@@ -36,6 +44,7 @@
 <script>
 import { reactive, ref, toRefs, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
 
@@ -57,15 +66,13 @@ const useTabEffect = () => {
   }
 }
 
-const useCurrentListEffect = (currentTab, toastHandler) => {
-  const route = useRoute()
-  const id = route.params.id
+const useCurrentListEffect = (currentTab, shopId, toastHandler) => {
   let content = reactive({
     list: {},
   })
   const getContentList = async () => {
     try {
-      const result = await get(`/api/shop/${id}/products`, {
+      const result = await get(`/api/shop/${shopId}/products`, {
         tab: currentTab.value,
       })
       if (result?.errno === 0 && result?.data.length) {
@@ -85,15 +92,35 @@ const useCurrentListEffect = (currentTab, toastHandler) => {
     getContentList,
   }
 }
+
+const useCartEffect = () => {
+  const store = useStore()
+  const { cartList } = toRefs(store.state)
+  const changeCartItemInfo = (shopId, productId, productInfo, num) => {
+    store.commit('changeCartItemInfo', {
+      shopId,
+      productId,
+      productInfo,
+      num,
+    })
+  }
+  return {
+    cartList,
+    changeCartItemInfo,
+  }
+}
 export default {
   name: 'Content',
   components: {
     Toast,
   },
   setup() {
+    const route = useRoute()
+    const shopId = route.params.id
     const { toastData, toastHandler } = useToastEffect()
     const { currentTab, handleTabClick } = useTabEffect()
-    const { list } = useCurrentListEffect(currentTab, toastHandler)
+    const { list } = useCurrentListEffect(currentTab, shopId, toastHandler)
+    const { cartList, changeCartItemInfo } = useCartEffect()
 
     return {
       toastData,
@@ -101,6 +128,9 @@ export default {
       currentTab,
       list,
       handleTabClick,
+      cartList,
+      shopId,
+      changeCartItemInfo,
     }
   },
 }
