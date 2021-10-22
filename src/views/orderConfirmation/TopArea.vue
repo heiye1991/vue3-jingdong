@@ -8,25 +8,46 @@
     </div>
     <div class="top__receiver">
       <div class="top__receiver__title">收货地址</div>
-      <div class="top__receiver__address">北京理工大学国防科技园2号楼10层</div>
-      <div class="top__receiver__info">
-        <span class="top__receiver__info__name">瑶妹（先生）</span>
-        <span class="top__receiver__info__name">18911024266</span>
+      <div v-if="currentAddress" @click="handleAddressClick">
+        <div class="top__receiver__address">
+          {{ currentAddress.city }}{{ currentAddress.department
+          }}{{ currentAddress.houseNumber }}
+        </div>
+        <div class="top__receiver__info">
+          <span class="top__receiver__info__name">{{
+            currentAddress.name
+          }}</span>
+          <span class="top__receiver__info__name">{{
+            currentAddress.phone
+          }}</span>
+        </div>
+        <div class="top__receiver__enter iconfont">&#xe6f2;</div>
       </div>
-      <div class="top__receiver__enter iconfont">&#xe6f2;</div>
+      <div v-else class="top__receiver__address">暂无可用地址</div>
     </div>
   </div>
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
 import { backEffect } from '@/effects/backEffect'
+import { useCommonAddressEffect } from '@/effects/addressEffect'
 
 export default {
   name: 'TopArea',
   setup() {
+    const router = useRouter()
     const { handleBackClick } = backEffect()
+    const handleAddressClick = () => {
+      router.push(`/chooseAddressList`)
+    }
+    const { getAddressList, currentAddress } = useCommonAddressEffect()
+    getAddressList()
+
     return {
       handleBackClick,
+      handleAddressClick,
+      currentAddress,
     }
   },
 }

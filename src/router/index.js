@@ -22,6 +22,14 @@ const routes = [
       ),
   },
   {
+    path: '/chooseAddressList',
+    name: 'ChooseAddressList',
+    component: () =>
+      import(
+        /* webpackChunkName: "chooseAddressList" */ '@/views/chooseAddressList/ChooseAddressList'
+      ),
+  },
+  {
     path: '/cartList',
     name: 'CartList',
     component: () =>

@@ -17,6 +17,8 @@ const getLocalCartList = () => {
 export default createStore({
   state: {
     cartList: getLocalCartList(),
+    addressList: [],
+    addressId: '',
   },
   mutations: {
     changeCartItemInfo(state, payload) {
@@ -61,6 +63,13 @@ export default createStore({
         }
       }
       setLocalCartList(state)
+    },
+    changeAddressList(state, addressList) {
+      state.addressList.splice(0, state.addressList.length, ...addressList)
+    },
+    chooseAddressId(state, payload) {
+      const { id } = payload
+      state.addressId = id
     },
   },
   actions: {},
