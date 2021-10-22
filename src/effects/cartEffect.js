@@ -12,7 +12,7 @@ export const useCommonCartEffect = shopId => {
     const productList = cartList[shopId]?.productList || {}
     const notEmptyProductList = {}
     for (const item of Object.values(productList)) {
-      if (item.count > 0) {
+      if (item.count > 0 && item.checked) {
         notEmptyProductList[item._id] = item
       }
     }
