@@ -46,7 +46,7 @@ import { reactive, ref, toRefs, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
-import { useCommonCartEffect } from './cartEffect'
+import { useCommonCartEffect } from '@/effects/cartEffect'
 
 const categories = [
   { name: '全部商品', tab: 'all' },

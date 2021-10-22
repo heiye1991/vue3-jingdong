@@ -1,9 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="search">
-      <router-link to="/">
-        <div class="search__back iconfont">&#xe6f2;</div>
-      </router-link>
+      <div class="search__back iconfont" @click="handleBackClick">&#xe6f2;</div>
       <div class="search__content">
         <span class="search__content__icon iconfont">&#xe62d;</span>
         <input
@@ -27,6 +25,7 @@ import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
 import Content from '@/views/shop/Content'
 import Cart from '@/views/shop/Cart'
+import { backEffect } from '@/effects/backEffect'
 
 const useShopInfoEffect = toastHandler => {
   const route = useRoute()
@@ -62,11 +61,13 @@ export default {
     Cart,
   },
   setup() {
+    const { handleBackClick } = backEffect()
     const { toastData, toastHandler } = useToastEffect()
     const { item, getShopInfoById } = useShopInfoEffect(toastHandler)
     getShopInfoById()
 
     return {
+      handleBackClick,
       toastData,
       item,
     }
