@@ -14,7 +14,7 @@
     </div>
     <ShopInfo v-show="item.imgUrl" :item="item" :show-border="false" />
     <Content :shopName="item.name" />
-    <Cart :shopName="item.name" />
+    <Cart />
   </div>
   <toast v-if="toastData.showToast" :message="toastData.toastMessage" />
 </template>

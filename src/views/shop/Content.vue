@@ -44,9 +44,9 @@
 <script>
 import { reactive, ref, toRefs, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { useStore } from 'vuex'
 import Toast, { useToastEffect } from '@/components/Toast'
 import { get } from '@/utils/request'
+import { useCommonCartEffect } from './cartEffect'
 
 const categories = [
   { name: '全部商品', tab: 'all' },
@@ -93,24 +93,8 @@ const useCurrentListEffect = (currentTab, shopId, toastHandler) => {
   }
 }
 
-const useCartEffect = () => {
-  const store = useStore()
-  const cartList = store.state.cartList
-  const changeCartItemInfo = (
-    shopId,
-    productId,
-    productInfo,
-    num,
-    shopName
-  ) => {
-    store.commit('changeCartItemInfo', {
-      shopId,
-      productId,
-      productInfo,
-      num,
-      shopName,
-    })
-  }
+const useCartEffect = shopId => {
+  const { cartList, changeCartItemInfo } = useCommonCartEffect(shopId)
   const getProductCartCount = (shopId, productId) => {
     return cartList?.[shopId]?.productList?.[productId]?.count || 0
   }
@@ -135,7 +119,7 @@ export default {
     const { currentTab, handleTabClick } = useTabEffect()
     const { list } = useCurrentListEffect(currentTab, shopId, toastHandler)
     const { cartList, changeCartItemInfo, getProductCartCount } =
-      useCartEffect()
+      useCartEffect(shopId)
 
     return {
       toastData,

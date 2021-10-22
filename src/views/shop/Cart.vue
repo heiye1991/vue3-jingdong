@@ -69,7 +69,7 @@
         >
       </div>
       <div class="check__btn" v-show="calculations.total > 0">
-        <router-link to="/">去结算</router-link>
+        <router-link :to="`/orderConfirmation/${shopId}`">去结算</router-link>
       </div>
     </div>
   </div>
@@ -79,51 +79,21 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
+import { useCommonCartEffect } from './cartEffect'
 
 const useCartEffect = () => {
   const route = useRoute()
   const store = useStore()
   const shopId = route.params.id
-  const cartList = store.state.cartList
   const showCart = ref(false)
 
-  const calculations = computed(() => {
-    const result = {
-      total: 0,
-      totalCount: 0,
-      totalPrice: 0,
-      allChecked: true,
-    }
-    const productList = cartList[shopId]?.productList
-    if (productList) {
-      for (const item of Object.values(productList)) {
-        if (item.checked) {
-          result.total += item.count
-          result.totalPrice += item.count * item.price
-        }
-        result.totalCount += item.count
-      }
-      result.allChecked = Object.values(productList).every(
-        product => product.checked
-      )
-    }
-    result.totalPrice = result.totalPrice.toFixed(2)
-    return result
-  })
+  const { cartList, shopName, changeCartItemInfo, calculations } =
+    useCommonCartEffect(shopId)
 
   const productList = computed(() => {
-    const productList = cartList[shopId]?.productList || []
+    const productList = cartList[shopId]?.productList || {}
     return productList
   })
-
-  const changeCartItemInfo = (shopId, productId, productInfo, num) => {
-    store.commit('changeCartItemInfo', {
-      shopId,
-      productId,
-      productInfo,
-      num,
-    })
-  }
 
   const toggleCartEffect = () => {
     const handleCartShowChange = () => {
@@ -154,6 +124,7 @@ const useCartEffect = () => {
     calculations,
     productList,
     shopId,
+    shopName,
     cartList,
     changeCartItemInfo,
     toggleCartEffect,
@@ -165,14 +136,12 @@ const useCartEffect = () => {
 
 export default {
   name: 'Cart',
-  props: {
-    shopName: String,
-  },
   setup() {
     const {
       calculations,
       productList,
       shopId,
+      shopName,
       cartList,
       changeCartItemInfo,
       toggleCartEffect,
@@ -186,6 +155,7 @@ export default {
       calculations,
       productList,
       shopId,
+      shopName,
       cartList,
       changeCartItemInfo,
       toggleCartEffect,
