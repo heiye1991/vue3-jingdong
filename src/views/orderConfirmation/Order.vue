@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCommonCartEffect } from '@/effects/cartEffect'
@@ -58,7 +58,7 @@ const useMakeOrderEffect = (shopId, shopName, productList, toastHandler) => {
   const router = useRouter()
   const store = useStore()
 
-  const addressId = store.state.addressId
+  const addressId = computed(() => store.state.addressId)
 
   const handleConfirmOrder = async isCanceled => {
     const products = []
@@ -68,7 +68,7 @@ const useMakeOrderEffect = (shopId, shopName, productList, toastHandler) => {
     }
     try {
       const result = await post('/api/order', {
-        addressId: addressId,
+        addressId,
         shopId,
         shopName: shopName.value,
         isCanceled,
