@@ -37,8 +37,8 @@
 
 <script>
 import { reactive, toRefs } from 'vue'
-import { get } from '../../utils/request'
-import Docker from '../../components/Docker'
+import { get } from '@/utils/request'
+import Docker from '@/components/Docker'
 
 // 处理订单列表逻辑
 const useOrderListEffect = () => {
@@ -56,7 +56,7 @@ const useOrderListEffect = () => {
           totalPrice +=
             productItem?.product?.price * productItem?.orderSales || 0
         })
-        order.totalPrice = totalPrice
+        order.totalPrice = totalPrice.toFixed(2)
         order.totalNumber = totalNumber
       })
       data.list = result.data
@@ -99,6 +99,7 @@ export default {
   margin: 0.16rem 0.18rem;
   padding: 0.16rem;
   background: $bgColor;
+  border-radius: 0.04rem;
   &__title {
     margin-bottom: 0.16rem;
     line-height: 0.22rem;
