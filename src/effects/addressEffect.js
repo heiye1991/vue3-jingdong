@@ -18,8 +18,9 @@ export const useCommonAddressEffect = () => {
   const currentAddress = computed(() => {
     const store = useStore()
     const addressList = store.state.addressList
-    const addressId = store.state.addressId
-    return addressList.find(item => item._id === addressId) || addressList[0]
+    const addressId = store.state.addressId || addressList[0]?._id
+    store.commit('chooseAddressId', addressId)
+    return addressList.find(item => item._id === addressId)
   })
 
   return { getAddressList, currentAddress }

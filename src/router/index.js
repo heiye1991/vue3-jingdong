@@ -54,6 +54,22 @@ const routes = [
       ),
   },
   {
+    path: '/myAddressList',
+    name: 'MyAddressList',
+    component: () =>
+      import(
+        /* webpackChunkName: "myAddressList" */ '@/views/myAddressList/MyAddressList'
+      ),
+  },
+  {
+    path: '/addressInfo/:id?',
+    name: 'AddressInfo',
+    component: () =>
+      import(
+        /* webpackChunkName: "addressInfo" */ '@/views/addressInfo/AddressInfo'
+      ),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () =>

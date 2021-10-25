@@ -64,12 +64,16 @@ export default createStore({
       }
       setLocalCartList(state)
     },
+    clearCartData(state, shopId) {
+      state.cartList[shopId].productList = {}
+      state.cartList[shopId].shopName = ''
+      setLocalCartList(state)
+    },
     changeAddressList(state, addressList) {
       state.addressList.splice(0, state.addressList.length, ...addressList)
     },
-    chooseAddressId(state, payload) {
-      const { id } = payload
-      state.addressId = id
+    chooseAddressId(state, addressId) {
+      state.addressId = addressId
     },
   },
   actions: {},
